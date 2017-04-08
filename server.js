@@ -2,21 +2,36 @@
 
 var app = require('express')();
 
-app.post('/sms', function(req, res) {
-  var twilio = require('twilio');
-  var twiml = new twilio.TwimlResponse();
-  twiml.message('The Robots are coming! Head for the hills!');
-  res.writeHead(200, {'Content-Type': 'text/xml'});
-  console.log("response recieved");
-  res.end(twiml.toString());
-});
+// app.post('/sms', function(req, res) {
+//   var twilio = require('twilio');
+//   var twiml = new twilio.TwimlResponse();
+//   twiml.message('reminder has been scheduled');
+//   res.writeHead(200, {'Content-Type': 'text/xml'});
+//   console.log(req.body.Body);
+//   res.end(twiml.toString());
+// });
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: false}));
+
 var http = require('http').Server(app);
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000);
 //app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
+
 // mongolabs (to look at database)
 // username: cmpsc431wTeam2
 // password: password314
+
+
+app.post('/sms', function(req, res) {
+  var twilio = require('twilio');
+  var twiml = new twilio.TwimlResponse();
+  twiml.message('reminder has been scheduled');
+  res.writeHead(200, {'Content-Type': 'text/xml'});
+  console.log(req.body.Body);
+  res.end(twiml.toString());
+});
 
 
 
@@ -46,7 +61,7 @@ var io = require('socket.io')(http);
 // we wont need this anymore because we are using mySQL not mongoDB
 ////////////////////////////////////  
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://admin1:@ds137110.mlab.com:37110/himalaya');
+mongoose.connect('mongodb://admin1:serverpass314@ds137110.mlab.com:37110/himalaya');
 
 var db = mongoose.connection;
 
