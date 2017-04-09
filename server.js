@@ -53,7 +53,7 @@ app.post('/sms', function(req, res) {
       
        var eta = a.dateOfReminder - Date.now();
        if (eta<0){
-        eta=1;
+        eta=5000;
        }
        setTimeout(scheduleNow.bind(null, a) , eta);
  //   }
@@ -94,7 +94,7 @@ var client = require('twilio')(accountSid, authToken);
 client.messages.create({ 
     to: "+18149698492", 
     from: "+18148063881", 
-    body: "twilio test", 
+    body: "tminder app has been started ", 
 }, function(err, message) { 
     console.log(message.sid); 
 });
@@ -223,11 +223,10 @@ var messages = mongoose.model('message', messageSchema);
   });
 });
 var reminders;
-setInterval(myMethod, 1000);
+//setInterval(myMethod, 1000);
 
 function myMethod( )
 {
-  console.log("sup");
   reminder.find({}).sort({dateOfReminder:1}).exec(function(err,doc){
 
      reminders=doc; 
