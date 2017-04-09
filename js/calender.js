@@ -54,12 +54,13 @@ function reminderInput(){
   //Remind me to ____message__ in ___time___ --> where time can be 3 hours or a date
   var ans = $("#messageField").val();
   console.log(ans);
-  // msg={
-  //   message:'remind me to '+$("#messageField").val()+"in"+ $("#dateField").val(),
-  //   number:Url.get.phonenumber
-  // }
-  // console.log('message: '+msg.message);
-  // socket.emit('submit reminder',msg);
+
+  msg={
+    message:'remind me to '+$("#messageField").val()+" in "+ $("#dateField").val(),
+    number:Url.get.phonenumber
+  }
+  console.log('message: '+msg.message);
+  socket.emit('submit reminder',msg);
 
 }
 
