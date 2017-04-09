@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- stylesheets here -->
+<link href="/css/main.css" rel="stylesheet">
+<link href="/css/w3.css" rel="stylesheet">
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="../js/calender.js" type="text/javascript"></script>
+</head>
+
+
+<body class = "w3-gray">
+
+	<div class="w3-container w3-teal">
+    	<h1>TMinder</h1>
+  	</div>
+  	<div class="w3-light-blue w3-container">
+	  	<div class = "w3-center w3-container w3-half">
+			<script type="text/javascript">
+		  		var cal = new Calendar();
+		  		cal.generateHTML();
+		  		document.write(cal.getHTML());
+			</script>
+		</div>
+		<div class = "w3-half w3-container">
+			<p id="reminder">Testing other half</p>
+			<script type="text/javascript">
+				console.log("HI")
+			</script>
+			<button onclick="console.log('PRESSED')">Test</button>
+		</div>
+	</div>
+
+</body>
+</html>

@@ -2,72 +2,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- stylesheets here -->
-<link href="/css/main.css" rel="stylesheet">
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- stylesheets here -->
+  <link href="/css/main.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+  <link rel="stylesheet" href="/css/w3.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 </head>
 
 
-<body>
-<!-- itemID: String,
-	description: String,
-	URL: String,
-	name: String,
-    numberOfRatings: number,
-	rating: number,
- -->
+<body class = "w3-gray">
+  <div class="w3-container w3-teal">
+    <h1>TMinder</h1>
+  </div>
 
- <div ng-app="myApp" ng-controller="myCtrl">
-<!-- <div class="container">
-<div class="col-sm-4"> -->
-<div width=" 100px" class="row">
-  Description <input id = 'description' type ="text" name="description">  
-  URL <input id = 'URL' type ="text" name="URL">  
-  name <input id = 'name' type ="text" name="name">  
-  numberOfRatings <input id = 'numberOfRatings' type ="text" name="numberOfRatings">  
-  rating <input id = 'rating' type ="text" name="rating">  
-  categoryID <input id = 'categoryID' type ="text" name="categoryID">   
-  <button id='button' type="button">Add Item</button>
-<!-- </div>
-</div> -->
-</div>
+  <div class = "w3-center">
+   <button onclick="document.getElementById('pn').style.display='block'" class="w3-button w3-green w3-large w3-center">See Reminders</button>
+  </div>
+
+  <div id="pn" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
   
+      <div class="w3-center"><br>
+        <span onclick="document.getElementById('pn').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close">×</span>
+        <img src="/images/phone.png" alt="phone" style="width:30%" class="w3-margin-top">
+      </div>
 
-<br>  
+      <form class="w3-container" action="/action_page.php">
+        <div class="w3-section">
+          <label><b>Phone Number</b></label>
+          <input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Enter Phonenumber" name="phonenumber" required>
+          <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">See Reminders</button>
+        </div>
+      </form>
 
-<br>  
+    </div>
+  </div>
 
-<br>  
+  <br>
 
-<br>
+  <div class = "w3-center">
+    <a class="w3-bar-item w3-button w3-center w3-blue" href="/pages/calender.html">Calender Beta</a>
+  </div>
 
-search <input id = 'search' type ="text" ng-model="searchtext">  
-you are trying to search: {{searchtext}}
-<br>
-
-<div>
-  <button id='refreshButton' type="button">refresh items</button>
-  <ul id='itemList'></ul>
-</div>
-
-        
-
-</div>
- 
-
-
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<!-- javascript down here, import jquery first ^        -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script> 
-
-<script src="/js/main.js"></script>
-
-
+  <div width=" 100px" class="row">
+    Description <input id = 'description' type ="text" name="description">  
+    URL <input id = 'URL' type ="text" name="URL">  
+    name <input id = 'name' type ="text" name="name">  
+    numberOfRatings <input id = 'numberOfRatings' type ="text" name="numberOfRatings">  
+    rating <input id = 'rating' type ="text" name="rating">  
+    categoryID <input id = 'categoryID' type ="text" name="categoryID">   
+    <button id='button' type="button">Add Item</button>
+  </div>
 
 
+  <br>  
+
+  <br>  
+
+  <br>  
+
+  <br>
+
+  search <input id = 'search' type ="text" ng-model="searchtext">  
+  you are trying to search: {{searchtext}}
+  <br>
+
+  <div>
+    <button id='refreshButton' type="button">refresh items</button>
+    <ul id='itemList'></ul>
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <!-- javascript down here, import jquery first ^        -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script> 
+  <script src="/js/main.js"></script>
 </body>
 </html>

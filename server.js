@@ -43,7 +43,7 @@ var authToken = 'ff1c34b4d97f8aae459ffb4dcb62efba';
 var client = require('twilio')(accountSid, authToken); 
  
 client.messages.create({ 
-    to: "+18149698492", 
+    to: "+16107419998", 
     from: "+18148063881", 
     body: "twilio test", 
 }, function(err, message) { 
@@ -81,6 +81,9 @@ app.get('/js/*', function (req, res) {
   res.sendFile(__dirname+ req.path);
 });
 app.get('/css/*', function (req, res) {
+  res.sendFile(__dirname+ req.path);
+});
+app.get('/pages/*', function (req, res) {
   res.sendFile(__dirname+ req.path);
 });
 
