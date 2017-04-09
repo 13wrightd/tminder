@@ -23,14 +23,63 @@ app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000);
 // username: cmpsc431wTeam2
 // password: password314
 
+var reminder = require('./models/reminder.js');
+
+
+
+var chrono = require('chrono-node')
+
+//url.substring( url.indexOf('?') + 1 );
+
+
 
 app.post('/sms', function(req, res) {
   var twilio = require('twilio');
   var twiml = new twilio.TwimlResponse();
-  twiml.message('reminder has been scheduled');
+
+  var string=req.body.Body;
+  var results = chrono.parse(string);
+  var dateNeeded= results[0].start.date();
+  var newString=string.slice(string.indexOf("remind me to")+"remind me to".length+1,string.indexOf(results[0].text));
+  console.log(newString);
+  var a = new reminder({
+         number:req.body.From,
+         message:newString,
+         dateOfReminder:dateNeeded
+          
+      })
+  a.save();
+ // if(a.dateOfReminder.getTime()>Date.now()){
+      
+       var eta = a.dateOfReminder - Date.now();
+       if (eta<0){
+        eta=1;
+       }
+       setTimeout(scheduleNow.bind(null, a) , eta);
+ //   }
+
+
+
+  twiml.message('reminder has been scheduled on '+a.dateOfReminder + ' with message: '+a.message);
   res.writeHead(200, {'Content-Type': 'text/xml'});
   console.log(req.body.Body);
   res.end(twiml.toString());
+});
+
+function scheduleNow(m) { 
+        console.log("scheduling now "+m.message);
+        client.messages.create({ 
+        to: m.number, 
+        from: "+18148063881", 
+        body: m.message, 
+      }, function(err, message) { 
+          console.log(message.sid); 
+      });
+}
+setTimeout(runOnce, 4000);
+//runOnce();
+var server = http.listen(app.get('port') , function () {
+    console.log("Express server listening at %s:%d ", app.get('ip'),app.get('port'));
 });
 
 
@@ -61,7 +110,9 @@ var io = require('socket.io')(http);
 // we wont need this anymore because we are using mySQL not mongoDB
 ////////////////////////////////////  
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://admin1:serverpass314@ds137110.mlab.com:37110/himalaya');
+
+
+mongoose.connect('mongodb://admin1:serverpass3141@ds035806.mlab.com:35806/tminder');
 
 var db = mongoose.connection;
 
@@ -93,7 +144,7 @@ app.get('/images/*', function (req, res) {
 
 
 
-var item = require('./models/item.js');
+
 
 
 io.on('connection', function(socket) {
@@ -127,7 +178,6 @@ var messages = mongoose.model('message', messageSchema);
           console.log("error");
         }
         else{
-          io.emit('item list', doc);
         }
         
     });
@@ -150,32 +200,83 @@ var messages = mongoose.model('message', messageSchema);
 
 
       
-      var a = new item({
-          itemID: msg.itemID,
-          description: msg.description,
-          URL: msg.URL,
-          name: msg.name,
-          numberOfRatings: msg.numberOfRatings,
-          categoryID: msg.categoryID,
-          rating: msg.rating
+      // var a = new item({
+      //     itemID: msg.itemID,
+      //     description: msg.description,
+      //     URL: msg.URL,
+      //     name: msg.name,
+      //     numberOfRatings: msg.numberOfRatings,
+      //     categoryID: msg.categoryID,
+      //     rating: msg.rating
           
-      })
-      console.log(a);
+      // })
+      // console.log(a);
 
-      a.save(function(error){
-        // if (error){
-        //     console.log('item was successfully added');
-        //   }
-        //   else{
-        //     console.log('item add failed');
-        //   }
-      })
+      // a.save(function(error){
+      //   // if (error){
+      //   //     console.log('item was successfully added');
+      //   //   }
+      //   //   else{
+      //   //     console.log('item add failed');
+      //   //   }
+      // })
   });
 });
+var reminders;
+setInterval(myMethod, 1000);
+
+function myMethod( )
+{
+  console.log("sup");
+  reminder.find({}).sort({dateOfReminder:1}).exec(function(err,doc){
+
+     reminders=doc; 
+    // console.log(doc);    
+      
+    });
+}
 
 
 
+//setInterval(myMethod2, 5000);
 
+function runOnce( )
+{
+  console.log("run once");
+  reminder.find({}).sort({dateOfReminder:1}).exec(function(err,doc){
+     reminders=doc;  
+  });
+  //console.log(reminders);
+  var eta_ms;
+  for(var i in reminders){
+    //console.log(eta_ms);
+    // console.log("loop");
+    // console.log(reminders[i]);
+    //    console.log(reminders[i].message);
+    //if(reminders[i].dateOfReminder>Date.now){
+      if(reminders[i].dateOfReminder.getTime()>Date.now()){
+        console.log(reminders[i].message);
+
+
+
+       eta_ms = reminders[i].dateOfReminder - Date.now();
+       setTimeout(schedule.bind(null, i) , eta_ms);
+    }
+  } 
+}
+
+function schedule(m) { 
+        console.log("scheduling"+reminders[m].message);
+        client.messages.create({ 
+        to: reminders[m].number, 
+        from: "+18148063881", 
+        body: reminders[m].message, 
+      }, function(err, message) { 
+          console.log(message.sid); 
+      });
+}
+setTimeout(runOnce, 4000);
+//runOnce();
 var server = http.listen(app.get('port') , function () {
     console.log("Express server listening at %s:%d ", app.get('ip'),app.get('port'));
 });
