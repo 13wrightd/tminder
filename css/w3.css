@@ -1,3 +1,7 @@
+ul li { text-align: center; }
+/*ul { list-style: none; }
+ul li { display: inline; }*/
+
 /* W3.CSS 4.03 Mar 2017 by Jan Egil and Borge Refsnes */
 html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}
 /* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
