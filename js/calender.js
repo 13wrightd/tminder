@@ -19,23 +19,25 @@ $(document).ready(function(){
   })
 });
 
-var reminders;
+var remindLog;
 //var Array record;
 $(document).ready(function(){ //angular
   socket.on('reminders', function(msg){//4
-    reminders=msg;
+    //reminders=msg;
 
-
+    console.log("testr",reminder);
     console.log(msg);
     //msg[0] = msg.splice(1, 1, msg[0])[0];
-    msg.splice(0,2,msg[1],msg[0]);
-    console.log(msg);
-    console.log(msg[1].dateOfReminder);
-
-    msg.sort(function(a,b) {
-      return ((new Date a.dateofReminder > new Date b.dateOfReminder) ? 1 : ((new Date b.dateOfReminder > new Date a.dateOfReminder) ? -1 : 0))} );
-    //msg.dateOfReminder.sort(function(a,b){return a-b});
-    //console.log(msg);
+    // msg.splice(0,2,msg[1],msg[0]);
+    // console.log(msg);
+    // console.log(msg[1].dateOfReminder);
+    //sorting the messages
+    // msg.sort(function(a,b) {
+    //   return (new Date (a.dateOfReminder) > new Date (b.dateOfReminder)) ? 1 : ((new Date (b.dateOfReminder) > new Date (a.dateOfReminder)) ? -1 : 0)} );
+    // console.log(msg);
+    // var a = new Date(msg[0].dateOfReminder);
+    // console.log("testing day: ",a.getDate());
+    remindLog = msg;
 
     //record = msg;
     //$('#chat').append('<li>'+msg.first+ " " + msg.last+ ": " +msg.message+'</li>');
@@ -45,7 +47,47 @@ $(document).ready(function(){ //angular
   socket.emit('get reminders', Url.get.phonenumber);
 
 });
-console.log(reminders);
+console.log(remindLog);
+
+//Adds new message to the database to be stored.
+function reminderInput(){
+  //Remind me to ____message__ in ___time___ --> where time can be 3 hours or a date
+  var ans = $("#messageField").val();
+  console.log(ans);
+  msg={
+    message:'remind me to '+$("#messageField").val()+"in"+ $("#dateField").val(),
+    number:Url.get.phonenumber
+  }
+  console.log('message: '+msg.message);
+  socket.emit('submit reminder',msg);
+
+}
+
+function Days(reminderDate,day,month,year){
+  var A = [];
+  for(i = 0; i<reminderDate.length;i++){
+    var date = new Date(reminderDate[i].dateOfReminder);
+    //console.log(date);
+    //if(reminderDate[x].dateOfReminder.getFullYear == year && reminderDate[x].dateOfReminder.getMonth == month && reminderDate[x].dateOfReminder.getDay== day){
+    if(date.getDate() == day){
+    
+      A.push(reminderDate[i]);
+      console.log(A);
+      console.log("working");
+    }
+  }
+  console.log("working");
+  if(A.length == 0){
+    document.getElementById('reminder').innerHTML="No Reminders Today";
+  }else{
+    document.getElementById('reminder').innerHTML=" ";
+    for(i = 0; i<A.length;i++){
+      document.getElementById('reminder').innerHTML+=('Reminder Date: '+ A[i].dateOfReminder +' <br>');
+      document.getElementById('reminder').innerHTML+=('Message: '+ A[i].message + '<br>');
+      document.getElementById('reminder').innerHTML+=('*********************<br>');
+    }
+  }
+}
 
 // these are labels for the days of the week
 cal_days_labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -108,12 +150,14 @@ Calendar.prototype.generateHTML = function(){
       html += '<td class="calendar-day">';
       if (day <= monthLength && (i > 0 || j >= startingDay)) {
         if(day<10){
-          //<button class="w3-button w3-black" onclick="console.log('work')">
-          html += ('<button class="w3-button w3-black" onclick="console.log('+"'work'"+')">&nbsp'+day+'&nbsp</button>');
+          //<button class="w3-button w3-black" onclick="getElementById('reminder').innerHTML=Days(reminder,day,this.month,this.year">
+          html += ('<button class="w3-button w3-black" onclick="Days(remindLog,'+day+",this.month,this.year)"
+                  +'">&nbsp'+day+'&nbsp</button>');
           day++;
         }
         else{
-          html += ('<button class="w3-button w3-black"">'+day+'</button>');
+          html += ('<button class="w3-button w3-black" onclick="Days(remindLog,'+day+',this.month,this.year)'
+                  +'">'+day+'</button>');
           day++;
 
         }
