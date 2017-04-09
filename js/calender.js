@@ -85,7 +85,9 @@ function Days(reminderDate,day,month,year){
   }else{
     for(i = 0; i<A.length;i++){
 
-      $("#reminderList").append("<li>Reminder Date: "+ new Date(A[i].dateOfReminder).toLocaleString() + "<br>" + 'Message: '+ A[i].message +"</li>");
+      // <font size="6">This is some text!</font>
+
+      $("#reminderList").append('<li><div style="font-size:25px">'+ A[i].message + "</div><br>"+ new Date(A[i].dateOfReminder).toLocaleString() +"</li>");
       // document.getElementById('reminder').innerHTML+=('Reminder Date: '+ A[i].dateOfReminder +' <br>');
       // document.getElementById('reminder').innerHTML+=('Message: '+ A[i].message + '<br>');
       // document.getElementById('reminder').innerHTML+=('*********************<br>');
