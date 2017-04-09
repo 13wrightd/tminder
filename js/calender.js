@@ -25,7 +25,7 @@ $(document).ready(function(){ //angular
   socket.on('reminders', function(msg){//4
     //reminders=msg;
 
-    console.log("testr",reminder);
+   // console.log("testr",reminder);
     console.log(msg);
     //msg[0] = msg.splice(1, 1, msg[0])[0];
     // msg.splice(0,2,msg[1],msg[0]);
@@ -78,14 +78,17 @@ function Days(reminderDate,day,month,year){
     }
   }
   console.log("working");
+  $("#reminderList").empty();
   if(A.length == 0){
-    document.getElementById('reminder').innerHTML="No Reminders Today";
+
+    $("#reminderList").append("<li>No Reminders Today</li>");
   }else{
-    document.getElementById('reminder').innerHTML=" ";
     for(i = 0; i<A.length;i++){
-      document.getElementById('reminder').innerHTML+=('Reminder Date: '+ A[i].dateOfReminder +' <br>');
-      document.getElementById('reminder').innerHTML+=('Message: '+ A[i].message + '<br>');
-      document.getElementById('reminder').innerHTML+=('*********************<br>');
+
+      $("#reminderList").append("<li>Reminder Date: "+ new Date(A[i].dateOfReminder).toLocaleString() + "<br>" + 'Message: '+ A[i].message +"</li>");
+      // document.getElementById('reminder').innerHTML+=('Reminder Date: '+ A[i].dateOfReminder +' <br>');
+      // document.getElementById('reminder').innerHTML+=('Message: '+ A[i].message + '<br>');
+      // document.getElementById('reminder').innerHTML+=('*********************<br>');
     }
   }
 }
