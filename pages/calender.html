@@ -16,19 +16,19 @@
 <body class = "w3-gray">
 
 	<div class="w3-container w3-teal">
-		<h1>TMinder</h1>
+		<a class="w3-button" href="../../"><h1>TMinder</h1></a>
 	</div>
 	<button onclick="document.getElementById('rem').style.display='block'" class="w3-bar-item w3-blue w3-right w3-button">Add Reminder</button>
 
 	<div class="w3-light-blue w3-container">
-		<div class = "w3-center w3-container w3-half">
+		<div class = "w3-center w3-container w3-third">
 			<script type="text/javascript">
 				var cal = new Calendar();
 				cal.generateHTML();
 				document.write(cal.getHTML());
 			</script>
 		</div>
-		<div class = "w3-half w3-container">
+		<div class = "w3-twothird w3-container">
 			<h3>Today's Reminders</h3>
 			<ul class="w3-ul w3-blue" id='reminderList'> </ul>
 		</div>
