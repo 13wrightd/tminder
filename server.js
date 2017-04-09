@@ -174,13 +174,14 @@ var messages = mongoose.model('message', messageSchema);
   socket.on('disconnect', function() {
     console.log('someone left');
   });
-  socket.on('get items', function() {
+  socket.on('get reminders', function(msg) {
     
-    item.find({} ,function (err, doc){
+    reminder.find({number:msg} ,function (err, doc){
         if(err){
           console.log("error");
         }
         else{
+          io.emit('reminders', doc);
         }
         
     });

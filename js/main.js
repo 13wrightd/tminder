@@ -8,8 +8,6 @@ app.controller('myCtrl', function($scope) {
 	});
 $(document).ready(function(){ //angular
 
-	
-	
 
 });
 

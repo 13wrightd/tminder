@@ -1,4 +1,51 @@
+var socket = io();
 
+Url = {
+    get get(){
+        var vars= {};
+        if(window.location.search.length!==0)
+            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value){
+                key=decodeURIComponent(key);
+                if(typeof vars[key]==="undefined") {vars[key]= decodeURIComponent(value);}
+                else {vars[key]= [].concat(vars[key], decodeURIComponent(value));}
+            });
+        return vars;
+    }
+};
+
+$(document).ready(function(){ 
+  $("#add").click(function(){
+      console.log(reminders);
+  })
+});
+
+var reminders;
+//var Array record;
+$(document).ready(function(){ //angular
+  socket.on('reminders', function(msg){//4
+    reminders=msg;
+
+
+    console.log(msg);
+    //msg[0] = msg.splice(1, 1, msg[0])[0];
+    msg.splice(0,2,msg[1],msg[0]);
+    console.log(msg);
+    console.log(msg[1].dateOfReminder);
+
+    msg.sort(function(a,b) {
+      return ((new Date a.dateofReminder > new Date b.dateOfReminder) ? 1 : ((new Date b.dateOfReminder > new Date a.dateOfReminder) ? -1 : 0))} );
+    //msg.dateOfReminder.sort(function(a,b){return a-b});
+    //console.log(msg);
+
+    //record = msg;
+    //$('#chat').append('<li>'+msg.first+ " " + msg.last+ ": " +msg.message+'</li>');
+  });
+
+  
+  socket.emit('get reminders', Url.get.phonenumber);
+
+});
+console.log(reminders);
 
 // these are labels for the days of the week
 cal_days_labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -52,6 +99,7 @@ Calendar.prototype.generateHTML = function(){
   html += '</tr><tr>';
 
   // fill in the days
+  var log = document.getElementById('reminder');
   var day = 1;
   // this loop is for is weeks (rows)
   for (var i = 0; i < 9; i++) {
@@ -60,6 +108,7 @@ Calendar.prototype.generateHTML = function(){
       html += '<td class="calendar-day">';
       if (day <= monthLength && (i > 0 || j >= startingDay)) {
         if(day<10){
+          //<button class="w3-button w3-black" onclick="console.log('work')">
           html += ('<button class="w3-button w3-black" onclick="console.log('+"'work'"+')">&nbsp'+day+'&nbsp</button>');
           day++;
         }
@@ -86,3 +135,4 @@ Calendar.prototype.generateHTML = function(){
 Calendar.prototype.getHTML = function() {
   return this.html;
 }
+
