@@ -55,7 +55,7 @@ function reminderInput(){
   var ans = $("#messageField").val();
   console.log(ans);
   msg={
-    message:'remind me to '+$("#messageField").val()+"in"+ $("#dateField").val(),
+    message:'remind me to '+$("#messageField").val()+" in "+ $("#dateField").val(),
     number:Url.get.phonenumber
   }
   console.log('message: '+msg.message);
