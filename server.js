@@ -39,15 +39,18 @@
 
     var string=req.body.Body;
     var results = chrono.parse(string);
-    var dateNeeded= results[0].start.date();
+    var dateNeeded=  new Date(results[0].start);
     var newString=string.slice(string.indexOf("remind me to")+"remind me to".length+1,string.indexOf(results[0].text));
     console.log(newString);
     var a = new reminder({
            number:req.body.From,
            message:newString,
            dateOfReminder:dateNeeded,
-           originalString:req.body.Body
-        })
+           originalString:req.body.Body,
+           scheduled: false,
+           finished: false
+        });
+
     a.save();
    // if(a.dateOfReminder.getTime()>Date.now()){
         
@@ -75,6 +78,19 @@
         }, function(err, message) { 
             console.log(message.sid); 
         });
+  }
+  function findAndSchedule(){
+    reminder.find({dateOfReminder: {lt: Date.now()+3*60000}}, function (err, docs){
+
+      docs.forEach(function(doc) {
+        doc.cid = '';
+        doc.save();
+      });
+
+      
+    });
+    //.sort({dateOfReminder:1})
+
   }
   setTimeout(runOnce, 4000);
   //runOnce();
