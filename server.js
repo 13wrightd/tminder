@@ -248,7 +248,7 @@
   });
   var reminders;
   setInterval(myMethod, 30000);
-setTimeout(myMethod, 30000);
+setTimeout(myMethod, 3000);
 function myMethod( ){
   console.log('checking for reminders...');
   // reminder.find({dateOfReminder:{$and:[{$gt:Date.now()},{$lt:Date.now()+60000}]}}).sort({dateOfReminder:1}).exec(function(err,doc){
