@@ -15,7 +15,7 @@
   app.use(bodyParser.urlencoded({extended: false}));
 
   var http = require('http').Server(app);
-  app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000);
+  app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3001);
   //app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 
