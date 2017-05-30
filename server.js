@@ -37,9 +37,12 @@
     var twilio = require('twilio');
     var twiml = new twilio.TwimlResponse();
 
+
     var string=req.body.Body;
+
     var results = chrono.parse(string);
-    var dateNeeded=  new Date(results[0].start);
+    var dateNeeded=  results[0].start.date();
+    console.log(string+' dateneeded: '+ dateNeeded);
     var newString=string.slice(string.indexOf("remind me to")+"remind me to".length+1,string.indexOf(results[0].text));
     console.log(newString);
     var a = new reminder({
@@ -51,14 +54,21 @@
            finished: false
         });
 
-    a.save();
+    
    // if(a.dateOfReminder.getTime()>Date.now()){
         
-         var eta = a.dateOfReminder - Date.now();
-         if (eta<0){
-          eta=5000;
-         }
-         setTimeout(scheduleNow.bind(null, a) , eta);
+        var eta = dateNeeded.getTime() - Date.now();
+          console.log('eta: '+eta+ "    "+eta/60000+ " minutes    "+eta/1000+" seconds");
+        if (eta<50000){
+          if (eta<5000){
+            eta=5000;
+          }
+          a.scheduled=true;
+          a.finished=true;
+          setTimeout(sendNow.bind(null, a) , eta);
+        }
+        a.save();
+         
    //   }
 
 
@@ -69,8 +79,8 @@
     res.end(twiml.toString());
   });
 
-  function scheduleNow(m) { 
-          console.log("scheduling now "+m.message);
+  function sendNow(m) { 
+          console.log("sending reminder: "+m.message);
           client.messages.create({ 
           to: m.number, 
           from: "+18148063881", 
@@ -83,7 +93,7 @@
     reminder.find({dateOfReminder: {lt: Date.now()+3*60000}}, function (err, docs){
 
       docs.forEach(function(doc) {
-        doc.cid = '';
+        doc.scheduled = true;;
         doc.save();
       });
 
@@ -92,7 +102,7 @@
     //.sort({dateOfReminder:1})
 
   }
-  setTimeout(runOnce, 4000);
+ // setTimeout(runOnce, 4000);
   //runOnce();
   var server = http.listen(app.get('port') , function () {
       console.log("Express server listening at %s:%d ", app.get('ip'),app.get('port'));
@@ -108,11 +118,18 @@
   var client = require('twilio')(accountSid, authToken); 
    
   client.messages.create({ 
-      to: "+16107419998", 
+    //  to: "+16107419998", 
+      to: "+18149698492", 
       from: "+18148063881", 
       body: "tminder app has been started ", 
   }, function(err, message) { 
-      console.log(message.sid); 
+      if(err){
+
+      }
+      else{
+        console.log(message.sid);   
+      }
+      
   });
 
 
@@ -157,36 +174,9 @@
   app.get('/images/*', function (req, res) {
     res.sendFile(__dirname+ req.path);
   });
-  // app.get('/images/still/*', function (req, res) {
-  //   res.sendFile(__dirname+ req.path);
-  // });
-
-
-
-
 
 
   io.on('connection', function(socket) {
-    //clients.push(socket.id);   //not necessary but useful for storing users and sending messages to them
-    //io.sockets.connected[socket.id].emit("message-history", messageHistoryObject.getMessages());
-
-  /*
-  var messageSchema = mongoose.Schema({
-    name: String,
-    message: String,
-    dateSent: { type: Date, default: Date.now }
-  });
-
-  var messages = mongoose.model('message', messageSchema);
-  */ 
-    //var thePost = require('./models/message.js');
-    //mongoose.model('post', thePost);
-    //var posts = db.model('post');
-    //var posts = mongoose.model('posts', thePost);
-
-    //posts.find({}, [], function(err, calls) { 
-      //console.log(err, calls, calls.length);  //prints out: null [] 0
-    //});
     socket.on('disconnect', function() {
       console.log('someone left');
     });
@@ -207,26 +197,42 @@
       console.log(msg.message);
 
       var string=msg.message;
-      var results = chrono.parse(string);
-      var dateNeeded= results[0].start.date();
-      var newString=string.slice(string.indexOf("remind me to")+"remind me to".length+1,string.indexOf(results[0].text));
-      console.log(newString);
-      var a = new reminder({
-             number:msg.number,
+  
+
+    var results = chrono.parse(string);
+    var dateNeeded=  results[0].start.date();
+    console.log(string+' dateneeded: '+ dateNeeded);
+    var newString=string.slice(string.indexOf("remind me to")+"remind me to".length+1,string.indexOf(results[0].text));
+    console.log(newString);
+    var a = new reminder({
+           number:msg.number,
              message:newString,
-             dateOfReminder:dateNeeded
-              
-          })
-      a.save();
-      console.log(a);
+             dateOfReminder:dateNeeded,
+           originalString:string,
+           scheduled: false,
+           finished: false
+        });
+
+    
    // if(a.dateOfReminder.getTime()>Date.now()){
         
-         var eta = a.dateOfReminder - Date.now();
-         if (eta<0){
-          eta=5000;
-         }
-         setTimeout(scheduleNow.bind(null, a) , eta);
-   //   }
+        var eta = dateNeeded.getTime() - Date.now();
+          console.log('eta: '+eta+ "    "+eta / 60000+ " minutes    "+eta/1000+" seconds");
+        if (eta<50000){
+          if (eta<5000){
+            eta=5000;
+          }
+          a.scheduled=true;
+          a.finished=true;
+          setTimeout(sendNow.bind(null, a) , eta);
+        }
+        a.save();
+
+
+
+
+
+   
 
 
 
@@ -238,58 +244,42 @@
     socket.on('button clicked', function(msg) {
 
       io.emit('button was clicked', msg);
-  //
-  // itemID: String,
-  //  description: String,
-  //  URL: String,
-  //  name: String,
-  //     numberOfRatings: number,
-  //  rating: number,
-  //  dateAdded:
-     
-
-
-
-
-        
-        // var a = new item({
-        //     itemID: msg.itemID,
-        //     description: msg.description,
-        //     URL: msg.URL,
-        //     name: msg.name,
-        //     numberOfRatings: msg.numberOfRatings,
-        //     categoryID: msg.categoryID,
-        //     rating: msg.rating
-            
-        // })
-        // console.log(a);
-
-        // a.save(function(error){
-        //   // if (error){
-        //   //     console.log('item was successfully added');
-        //   //   }
-        //   //   else{
-        //   //     console.log('item add failed');
-        //   //   }
-        // })
     });
   });
   var reminders;
-  //setInterval(myMethod, 1000);
-
-  function myMethod( )
-  {
-    reminder.find({}).sort({dateOfReminder:1}).exec(function(err,doc){
-
-       reminders=doc; 
-      // console.log(doc);    
+  setInterval(myMethod, 30000);
+setTimeout(myMethod, 30000);
+function myMethod( ){
+  console.log('checking for reminders...');
+  // reminder.find({dateOfReminder:{$and:[{$gt:Date.now()},{$lt:Date.now()+60000}]}}).sort({dateOfReminder:1}).exec(function(err,doc){
+      reminder.find({dateOfReminder:{$gt:Date.now()-10000,$lt:Date.now()+60000}}).sort({dateOfReminder:1}).exec(function(err,doc){
+ //   reminder.find().sort({dateOfReminder:1}).exec(function(err,doc){
+    reminders=doc; 
+     var eta;
+    for(var i in reminders){
+      if(reminders[i].scheduled==false){
+        eta = new Date(reminders[i].dateOfReminder);
+        eta= eta.getTime() - Date.now();
+        if(eta<5000){
+          eta=5000;
+        }
+        reminders[i].scheduled=true;
+        reminders[i].save();
+        setTimeout(schedule.bind(null, reminders[i]) , eta);
         
-      });
-  }
+        console.log('scheduled: '+ reminders[i].message);
+      }
+      else{
+        //console.log('already scheduled: ' + reminders[i].message);
+      }
+      
+    }
+  });
+}
 
 
 
-  //setInterval(myMethod2, 5000);
+
 
   function runOnce( )
   {
@@ -311,22 +301,22 @@
 
 
          eta_ms = reminders[i].dateOfReminder - Date.now();
-         setTimeout(schedule.bind(null, i) , eta_ms);
+         setTimeout(schedule.bind(null, reminders[i]) , eta_ms);
       }
     } 
   }
 
   function schedule(m) { 
-          console.log("scheduling"+reminders[m].message);
+          console.log("scheduling"+m.message);
           client.messages.create({ 
-          to: reminders[m].number, 
+          to: m.number, 
           from: "+18148063881", 
-          body: reminders[m].message, 
+          body: m.message, 
         }, function(err, message) { 
             console.log(message.sid); 
         });
   }
-  setTimeout(runOnce, 4000);
+  // setTimeout(runOnce, 4000);
   //runOnce();
   var server = http.listen(app.get('port') , function () {
       console.log("Express server listening at %s:%d ", app.get('ip'),app.get('port'));
