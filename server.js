@@ -45,8 +45,8 @@
     var a = new reminder({
            number:req.body.From,
            message:newString,
-           dateOfReminder:dateNeeded
-            
+           dateOfReminder:dateNeeded,
+           originalString:req.body.Body
         })
     a.save();
    // if(a.dateOfReminder.getTime()>Date.now()){
@@ -60,7 +60,7 @@
 
 
 
-    twiml.message('reminder has been scheduled on '+a.dateOfReminder + ' with message: '+a.message);
+    twiml.message((new Date(a.dateOfReminder)).toLocaleString()+'reminder has been scheduled on '+a.dateOfReminder + ' with message: '+a.message);
     res.writeHead(200, {'Content-Type': 'text/xml'});
     console.log(req.body.Body);
     res.end(twiml.toString());
