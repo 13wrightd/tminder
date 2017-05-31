@@ -55,9 +55,17 @@ function reminderInput(){
   var ans = $("#messageField").val();
   console.log(ans);
 
+var tmp;
+if($("#in").prop('checked')){
+  tmp='remind me to '+$("#messageField").val()+' in '+ $("#dateField").val();
+}
+else{
+  tmp='remind me to '+$("#messageField").val()+' at '+ $("#dateField").val();
+}
   msg={
-    message:'remind me to '+$("#messageField").val()+" in "+ $("#dateField").val(),
-    number:Url.get.phonenumber
+    message: tmp,
+    number:Url.get.phonenumber,
+    offset:new Date().getTimezoneOffset()
   }
   console.log('message: '+msg.message);
   socket.emit('submit reminder',msg);

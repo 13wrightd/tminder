@@ -48,7 +48,8 @@
 				<div class="w3-section">
 					<label><b>Remind me to</b></label>
 					<input id='messageField' class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Enter Task" name="message" required>
-					<label><b>in/at</b></label>
+					<input id='in' type="radio" name="inOrAt" value="in" checked='true'> in<br>
+					<input type="radio" name="inOrAt" value="at"> at<br>
 					<input id='dateField' class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Time ex: 3 hours" name="time" required>
 					<button id='submitButton' onclick="document.getElementById('rem').style.display='none'" class="w3-button w3-block w3-green w3-section w3-padding" type="submit">Submit Reminder</button>
 				</div>

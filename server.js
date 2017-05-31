@@ -24,6 +24,7 @@
   // password: password314
 
   var reminder = require('./models/reminder.js');
+  var number = require('./models/number.js');
 
 
 
@@ -195,6 +196,7 @@
     socket.on('submit reminder', function(msg){
       console.log('submit reminder recieved');
       console.log(msg.message);
+      console.log('offset: '+msg.offset);
 
       var string=msg.message;
   
