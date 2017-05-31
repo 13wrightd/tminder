@@ -43,6 +43,21 @@
 
     var results = chrono.parse(string);
     var dateNeeded=  results[0].start.date();
+    
+    number.findOne({number:req.body.From}, function(err, doc){ 
+      if (err) {
+        console.log(err.name);
+      
+      }
+      if (!doc){
+        console.log('number not Found');
+
+      }
+      console.log('number found');
+  
+    });
+
+
     console.log(string+' dateneeded: '+ dateNeeded);
     var newString=string.slice(string.indexOf("remind me to")+"remind me to".length+1,string.indexOf(results[0].text));
     console.log(newString);
