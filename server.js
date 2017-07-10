@@ -13,6 +13,7 @@
 
   var bodyParser = require('body-parser');
   app.use(bodyParser.urlencoded({extended: false}));
+  app.use(bodyParser.json());
 
   var http = require('http').Server(app);
   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3001);
@@ -32,8 +33,11 @@
 
   //url.substring( url.indexOf('?') + 1 );
 
-
-
+  app.post('/esp', function(req, res, next) {
+    //JSON.parse(body)
+    console.log(req.body);
+    res.json({ message: 'Success' });
+  });
   app.post('/sms', function(req, res) {
     var twilio = require('twilio');
     var twiml = new twilio.TwimlResponse();
@@ -43,18 +47,19 @@
 
     var results = chrono.parse(string);
     var dateNeeded=  results[0].start.date();
-    
-    number.findOne({number:req.body.From}, function(err, doc){ 
+
+    number.findOne({number:req.body.From}, function(err, doc){
       if (err) {
         console.log(err.name);
-      
+
       }
       if (!doc){
         console.log('number not Found');
+        dateNeeded=dateNeeded.getTime()+240*60000
 
       }
       console.log('number found');
-  
+
     });
 
 
@@ -70,9 +75,9 @@
            finished: false
         });
 
-    
+
    // if(a.dateOfReminder.getTime()>Date.now()){
-        
+
         var eta = dateNeeded.getTime() - Date.now();
           console.log('eta: '+eta+ "    "+eta/60000+ " minutes    "+eta/1000+" seconds");
         if (eta<50000){
@@ -84,7 +89,7 @@
           setTimeout(sendNow.bind(null, a) , eta);
         }
         a.save();
-         
+
    //   }
 
 
@@ -95,14 +100,14 @@
     res.end(twiml.toString());
   });
 
-  function sendNow(m) { 
+  function sendNow(m) {
           console.log("sending reminder: "+m.message);
-          client.messages.create({ 
-          to: m.number, 
-          from: "+18148063881", 
-          body: m.message, 
-        }, function(err, message) { 
-            console.log(message.sid); 
+          client.messages.create({
+          to: m.number,
+          from: "+18148063881",
+          body: m.message,
+        }, function(err, message) {
+            console.log(message.sid);
         });
   }
   function findAndSchedule(){
@@ -113,7 +118,7 @@
         doc.save();
       });
 
-      
+
     });
     //.sort({dateOfReminder:1})
 
@@ -126,26 +131,26 @@
 
 
 
-  // Twilio Credentials 
-  var accountSid = 'AC781a0833a4249069bcf3ae072619d368'; 
-  var authToken = 'ff1c34b4d97f8aae459ffb4dcb62efba'; 
-   
-  //require the Twilio module and create a REST client 
-  var client = require('twilio')(accountSid, authToken); 
-   
-  client.messages.create({ 
-    //  to: "+16107419998", 
-      to: "+18149698492", 
-      from: "+18148063881", 
-      body: "tminder app has been started ", 
-  }, function(err, message) { 
+  // Twilio Credentials
+  var accountSid = 'AC781a0833a4249069bcf3ae072619d368';
+  var authToken = 'ff1c34b4d97f8aae459ffb4dcb62efba';
+
+  //require the Twilio module and create a REST client
+  var client = require('twilio')(accountSid, authToken);
+
+  client.messages.create({
+    //  to: "+16107419998",
+      to: "+18149698492",
+      from: "+18148063881",
+      body: "tminder app has been started ",
+  }, function(err, message) {
       if(err){
 
       }
       else{
-        console.log(message.sid);   
+        console.log(message.sid);
       }
-      
+
   });
 
 
@@ -157,7 +162,7 @@
 
 
   // we wont need this anymore because we are using mySQL not mongoDB
-  ////////////////////////////////////  
+  ////////////////////////////////////
   var mongoose = require('mongoose');
 
 
@@ -197,7 +202,7 @@
       console.log('someone left');
     });
     socket.on('get reminders', function(msg) {
-      
+
       reminder.find({number:msg} ,function (err, doc){
           if(err){
             console.log("error");
@@ -205,7 +210,7 @@
           else{
             io.emit('reminders', doc);
           }
-          
+
       });
     });
     socket.on('submit reminder', function(msg){
@@ -214,7 +219,7 @@
       console.log('offset: '+msg.offset);
 
       var string=msg.message;
-  
+
 
     var results = chrono.parse(string);
     var dateNeeded=  results[0].start.date();
@@ -230,9 +235,9 @@
            finished: false
         });
 
-    
+
    // if(a.dateOfReminder.getTime()>Date.now()){
-        
+
         var eta = dateNeeded.getTime() - Date.now();
           console.log('eta: '+eta+ "    "+eta / 60000+ " minutes    "+eta/1000+" seconds");
         if (eta<50000){
@@ -249,7 +254,7 @@
 
 
 
-   
+
 
 
 
@@ -271,7 +276,7 @@ function myMethod( ){
   // reminder.find({dateOfReminder:{$and:[{$gt:Date.now()},{$lt:Date.now()+60000}]}}).sort({dateOfReminder:1}).exec(function(err,doc){
       reminder.find({dateOfReminder:{$gt:Date.now()-10000,$lt:Date.now()+60000}}).sort({dateOfReminder:1}).exec(function(err,doc){
  //   reminder.find().sort({dateOfReminder:1}).exec(function(err,doc){
-    reminders=doc; 
+    reminders=doc;
      var eta;
     for(var i in reminders){
       if(reminders[i].scheduled==false){
@@ -283,13 +288,13 @@ function myMethod( ){
         reminders[i].scheduled=true;
         reminders[i].save();
         setTimeout(schedule.bind(null, reminders[i]) , eta);
-        
+
         console.log('scheduled: '+ reminders[i].message);
       }
       else{
         //console.log('already scheduled: ' + reminders[i].message);
       }
-      
+
     }
   });
 }
@@ -302,7 +307,7 @@ function myMethod( ){
   {
     console.log("run once");
     reminder.find({}).sort({dateOfReminder:1}).exec(function(err,doc){
-       reminders=doc;  
+       reminders=doc;
     });
     //console.log(reminders);
     var eta_ms;
@@ -320,17 +325,17 @@ function myMethod( ){
          eta_ms = reminders[i].dateOfReminder - Date.now();
          setTimeout(schedule.bind(null, reminders[i]) , eta_ms);
       }
-    } 
+    }
   }
 
-  function schedule(m) { 
+  function schedule(m) {
           console.log("scheduling"+m.message);
-          client.messages.create({ 
-          to: m.number, 
-          from: "+18148063881", 
-          body: m.message, 
-        }, function(err, message) { 
-            console.log(message.sid); 
+          client.messages.create({
+          to: m.number,
+          from: "+18148063881",
+          body: m.message,
+        }, function(err, message) {
+            console.log(message.sid);
         });
   }
   // setTimeout(runOnce, 4000);
@@ -346,7 +351,7 @@ function myMethod( ){
   //javascript class example
   /*
   function player(xStart, yStart, socketId){
-    
+
     if(xStart){
      this.x=xStart;
     }
@@ -354,7 +359,7 @@ function myMethod( ){
       this.x=width/2;
     }
     if(yStart){
-      this.y=yStart;  
+      this.y=yStart;
     }
     else{
       this.y=height/2;
