@@ -26,18 +26,63 @@
 
   var reminder = require('./models/reminder.js');
   var number = require('./models/number.js');
+  var mcu = require('./models/mcu.js');
+  var relayValue=1;
+
+var lastMcu= new mcu({
 
 
+      bmp: 5,
+      sensor: 'delete',
+      ip: '192.168.1.13'
+    });
+lastMcu.save()
 
   var chrono = require('chrono-node')
 
   //url.substring( url.indexOf('?') + 1 );
-
   app.post('/esp', function(req, res, next) {
     //JSON.parse(body)
     console.log(req.body);
-    res.json({ message: 'Success' });
+    var lastMcu= new mcu({
+
+
+      bmp: 5,
+      sensor: 'delete',
+      ip: '192.168.1.13'
+    });
+    lastMcu.save();
+    res.json({ 
+      "relay": relayValue
+    });
   });
+
+
+  app.get('/getData', function(req, res) {
+    console.log('getData');
+    if(relayValue==1){
+      relayValue=0;
+    }
+    else{
+      relayValue=1;
+    }
+    var lastMcu= {
+
+
+      bmp: 5,
+      sensor: '50',
+      ip: '192.168.1.13'
+    };
+     res.header("Content-Type",'application/json');
+    res.json(JSON.stringify(lastMcu));
+  });
+
+
+
+
+
+
+
   app.post('/sms', function(req, res) {
     var twilio = require('twilio');
     var twiml = new twilio.TwimlResponse();
